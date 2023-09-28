@@ -6,12 +6,9 @@ import { readFileSync } from "fs";
 import { join } from "path";
 import cookieParser from "cookie-parser";
 
-const STATIC_PATH = `${process.cwd()}/../client/build`;
+const STATIC_PATH =`${process.cwd()}/../client/build`;
 
 //importing .env variables
-
-import dotenv from "dotenv";
-dotenv.config({ path: "./config/.env" });
 
 const app = express();
 

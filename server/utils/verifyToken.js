@@ -12,7 +12,7 @@ const verifyJwt = async (req, res, next) => {
   }
 
   try {
-    req.payload = jwt.verify(req.cookies.token, process.env.SECRET);
+    req.payload = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
     next();
   } catch (err) {
     return res.status(401).json({

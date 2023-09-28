@@ -27,7 +27,7 @@ export const validateUser = async function (req, res) {
 
 export const register = async function (req, res) {
   try {
-    const { name, password } = req.body;
+    const { name,email,  password } = req.body;
 
     // check does user exist in User
 
@@ -40,7 +40,7 @@ export const register = async function (req, res) {
     }
     // encrypting the password
 
-    const encryptedPassword = await bcrypt.hashSync(password, 12);
+    const encryptedPassword = bcrypt.hashSync(password, 12);
 
     // creating the user
 
@@ -57,7 +57,7 @@ export const register = async function (req, res) {
         exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30,
         name,
       },
-      process.env.SECRET
+      process.env.JWT_SECRET
     );
 
     createCookie(res, token);
@@ -98,7 +98,7 @@ export const login = async function (req, res) {
       {
         name,
       },
-      process.env.SECRET
+      process.env.JWT_SECRET
     );
 
     createCookie(res, token);
