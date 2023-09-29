@@ -20,7 +20,9 @@ const Store = () => {
         error: "",
       });
 
-      const { data } = await axios.get("/api/shopDetails/getStore");
+      const { data } = await axios.get("/api/shopDetails/getStore", {
+        withCredentials: true,
+      });
 
       setData(data.data);
 
@@ -46,7 +48,7 @@ const Store = () => {
     <div className="p-5 h-screen bg-slate-900">
       <h1 className="text-3xl text-white mb-10 tracking-wider">SHOPS</h1>
 
-      <div className="overflow-auto rounded-lg shadow hidden md:block">
+      <div className="overflow-y-auto h-[80vh] rounded-lg shadow hidden md:block">
         <table className="w-full">
           <thead className="bg-slate-800 border-b-2 border-teal-500">
             <tr>
