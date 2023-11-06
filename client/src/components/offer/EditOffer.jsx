@@ -103,9 +103,10 @@ const EditOffer = () => {
 
     try {
       const { data } = await axios.post(
-        "/api/discountDetails/getDiscountById",
+        "http://localhost:8081/api/discountDetails/getDiscountById",
         { id },
         {
+          withCredentials: true,
           "Content-Type": "application/json",
         }
       );
@@ -138,9 +139,10 @@ const EditOffer = () => {
       console.log(shop);
 
       const { data } = await axios.post(
-        "/api/shopDetails/getCurrency",
+        "http://localhost:8081/api/shopDetails/getCurrency",
         { shop },
         {
+          withCredentials: true,
           "Content-Type": "application/json",
         }
       );
@@ -161,9 +163,10 @@ const EditOffer = () => {
       let tempData = groupFields(formData, offerList);
 
       const { data } = await axios.post(
-        "/api/discountDetails/editDiscount",
+        "http://localhost:8081/api/discountDetails/editDiscount",
         { id, data: tempData },
         {
+          withCredentials: true,
           "Content-Type": "application/json",
         }
       );

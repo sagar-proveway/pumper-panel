@@ -10,7 +10,7 @@ import {
 } from "../utils/metaData.js";
 
 export const getAllDiscountById = async (req, res, next) => {
-  const { shopName: shop } = req.body;
+  const { shop } = req.body;
 
   try {
     const offerDetails = await discountModel.find({
@@ -32,7 +32,7 @@ export const getAllDiscountById = async (req, res, next) => {
 };
 
 export const getDiscountByIdToCompare = async (req, res, next) => {
-  const { shopName: shop } = req.body;
+  const { shop } = req.body;
 
   try {
     const shopDetails = await ShopModal.find({
@@ -90,7 +90,7 @@ export const getDiscountByIdToCompare = async (req, res, next) => {
 };
 
 export const getDiscountById = async (req, res, next) => {
-  const { id, shop } = req.body;
+  const { id } = req.body;
 
   try {
     const discount = await discountModel.find({

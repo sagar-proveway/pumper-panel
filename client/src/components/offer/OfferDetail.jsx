@@ -14,7 +14,6 @@ const OfferDetails = () => {
   const { id } = useParams();
 
   const getStoreDetails = async () => {
-    let shopName = id.replace(/ /g, "-").toLowerCase().concat(".myshopify.com");
     try {
       setLoading({
         loading: true,
@@ -22,11 +21,12 @@ const OfferDetails = () => {
         error: "",
       });
       const { data } = await axios.post(
-        "/api/discountDetails/getDiscountByIdToCompare",
+        "http://localhost:8081/api/discountDetails/getDiscountByIdToCompare",
         {
-          shopName,
+          shop: id,
         },
         {
+          withCredentials: true,
           "Content-Type": "application/json",
         }
       );
@@ -100,7 +100,7 @@ const OfferDetails = () => {
                 {data?.queryData?.map((queryData) => {
                   return (
                     <Fragment>
-                      {queryData.discountId === discountData.discountGid && (
+                      {queryData?.discountId === discountData.discountGid && (
                         <div className="bg-slate-800 p-5 me-3 rounded-lg ">
                           <div className="flex flex-col text-sm">
                             <div className="tracking-widest">

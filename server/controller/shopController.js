@@ -5,8 +5,20 @@ import Settings from "../model/settingsModal.js";
 import { decode } from "html-entities";
 
 export const getStore = async (req, res, next) => {
+  const { sort, shop } = req.body;
+
+  let sortByDesc;
+
+  if (sort === true) {
+    sortByDesc = -1;
+  } else {
+    sortByDesc = 1;
+  }
+
   try {
-    const result = await ShopModal.find();
+    let result = await ShopModal.find({
+      shop: { $regex: `${shop}`, $options: "i" },
+    }).sort({ revenue: sortByDesc });
 
     if (!result || result.length === 0) {
       throw new Error("Shop not found");
@@ -20,11 +32,11 @@ export const getStore = async (req, res, next) => {
 };
 
 export const getShopById = async (req, res, next) => {
-  const { shopName } = req.body;
+  const { shop } = req.body;
 
   try {
     const result = await ShopModal.find({
-      shop: shopName,
+      shop,
     });
 
     if (!result || result.length === 0) {
@@ -150,7 +162,6 @@ export const setSettings = async (req, res, next) => {
 export async function getCurrency(req, res) {
   const { shop } = req.body;
 
-  console.log(shop);
   try {
     const shopDetails = await ShopModal.find({
       shop,

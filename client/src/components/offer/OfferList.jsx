@@ -15,8 +15,6 @@ const OfferList = () => {
 
   const { id } = useParams();
 
-  let shopName = id.replace(/ /g, "-").toLowerCase().concat(".myshopify.com");
-
   const getOfferList = async () => {
     setLoading({
       loading: true,
@@ -26,9 +24,10 @@ const OfferList = () => {
 
     try {
       const { data } = await axios.post(
-        "/api/discountDetails/getAllDiscountById",
-        { shopName },
+        "http://localhost:8081/api/discountDetails/getAllDiscountById",
+        { shop: id },
         {
+          withCredentials: true,
           "Content-Type": "application/json",
         }
       );
@@ -80,7 +79,7 @@ const OfferList = () => {
               <div className="bg-slate-800 p-5 me-3 rounded-lg mb-3 flex justify-between items-center">
                 <h1>{item.offerName}</h1>
                 <Link
-                  to={`/offer/list/edit/${item?._id}?shop=${shopName}`}
+                  to={`/offer/list/edit/${item?._id}?shop=${id}`}
                   className="me-5 font-bold hover:underline"
                 >
                   <AiFillEdit size={20} />

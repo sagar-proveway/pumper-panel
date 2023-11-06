@@ -10,7 +10,7 @@ import verifyJwt from "../utils/verifyToken.js";
 
 const router = express.Router();
 
-router.route("/getStore").get(verifyJwt, getStore);
+router.route("/getStore").post(verifyJwt, getStore);
 router.route("/getShopById").post(verifyJwt, getShopById);
 router.route("/getSettings").post(verifyJwt, getSettings);
 router.route("/setSettings").post(verifyJwt, setSettings);

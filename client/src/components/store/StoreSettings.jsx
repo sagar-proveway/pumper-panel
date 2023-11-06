@@ -19,8 +19,6 @@ const StoreSettings = () => {
   });
 
   const getSettings = async () => {
-    let shopName = id.replace(/ /g, "-").toLowerCase().concat(".myshopify.com");
-
     try {
       setLoading({
         loading: true,
@@ -28,11 +26,12 @@ const StoreSettings = () => {
         error: "",
       });
       const { data } = await axios.post(
-        "/api/shopDetails/getSettings",
+        "http://localhost:8081/api/shopDetails/getSettings",
         {
-          shopName,
+          shop: id,
         },
         {
+          withCredentials: true,
           "Content-Type": "application/json",
         }
       );
@@ -59,7 +58,6 @@ const StoreSettings = () => {
   };
 
   const updateSettings = async () => {
-    let shopName = id.replace(/ /g, "-").toLowerCase().concat(".myshopify.com");
     setLoading({
       loading: true,
       success: "",
@@ -68,15 +66,16 @@ const StoreSettings = () => {
 
     try {
       const { data } = await axios.post(
-        "/api/shopDetails/setSettings",
+        "http://localhost:8081/api/shopDetails/setSettings",
 
         {
-          shopName,
+          shop: id,
           customCss: formData.customCss,
           customJs: formData.customJs,
           customWidgetSelector: formData.customWidgetSelector,
         },
         {
+          withCredentials: true,
           "Content-Type": "application/json",
         }
       );
