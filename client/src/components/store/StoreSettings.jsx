@@ -108,7 +108,7 @@ const StoreSettings = () => {
   return (
     <div className="p-5 h-screen bg-slate-900 text-white">
       <h1 className="text-3xl text-white mb-10 tracking-wider">
-        Settings <span className="text-teal-300">{id}</span>
+        Settings <span className="text-teal-300">({id})</span>
       </h1>
 
       {loading.loading && (

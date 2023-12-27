@@ -54,7 +54,7 @@ const OfferDetails = () => {
   return (
     <div className="p-5 h-screen bg-slate-900 text-white">
       <h1 className="text-2xl text-white mb-10 tracking-wider">
-        Offer details for store <span className="text-teal-300"> {id}</span>
+        Offer details for store <span className="text-teal-300"> ({id})</span>
       </h1>
 
       {loading.loading && (
@@ -77,9 +77,9 @@ const OfferDetails = () => {
             <div className="text-2xl">Query Data </div>
           </div>
 
-          {data?.discount?.map((discountData) => {
+          {data?.discount?.map((discountData, index) => {
             return (
-              <div className="flex justify-around items-ceter mb-3">
+              <div key={index} className="flex justify-around items-ceter mb-3">
                 <div className="bg-slate-800 p-5 me-3 rounded-lg ">
                   <div className="flex flex-col text-sm">
                     <div className="tracking-widest">
@@ -97,9 +97,9 @@ const OfferDetails = () => {
                   </div>
                 </div>
 
-                {data?.queryData?.map((queryData) => {
+                {data?.queryData?.map((queryData, index) => {
                   return (
-                    <Fragment>
+                    <Fragment key={index}>
                       {queryData?.discountId === discountData.discountGid && (
                         <div className="bg-slate-800 p-5 me-3 rounded-lg ">
                           <div className="flex flex-col text-sm">

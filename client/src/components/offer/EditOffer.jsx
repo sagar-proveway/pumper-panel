@@ -19,8 +19,7 @@ const EditOffer = () => {
   const { id } = useParams();
 
   const [searchParams] = useSearchParams();
-
-  let shop = searchParams.get("shop");
+  const shopName = searchParams.get("shop");
 
   const [formData, setFormData] = useState({
     offerName: "Offer",
@@ -71,6 +70,7 @@ const EditOffer = () => {
     footerText: "Free 2 Day Shipping",
     hideHeaderFooterLines: false,
     customCompareAtPrice: "0",
+    skipToCheckout: false,
   });
 
   const [offerList, setOfferList] = useState([
@@ -308,10 +308,13 @@ const EditOffer = () => {
     // { label: 'Fixed Price (e.g. ' + currencyFormat(29).replace(/(<([^>]+)>)/ig, '') + ')', value: 'fixed' },
   ];
 
+  console.log(formData, "formData");
   return (
     <div className="h-screen bg-slate-900 text-white p-5 overflow-auto">
       <div className="flex justify-between">
-        <h1 className="text-3xl text-white mb-10 tracking-wider">Offer List</h1>
+        <h1 className="text-3xl text-white mb-10 tracking-wider">
+          Offer List <span className="text-teal-300"> ({shopName})</span>
+        </h1>
         <button
           type="button"
           className=" text-white bg-teal-500 hover:bg-teal-400 font-medium rounded-lg text-sm h-10 w-20"
@@ -417,7 +420,7 @@ const EditOffer = () => {
                       htmlFor="showPriceByEach"
                       className="text-sm ms-2 cursor-pointer"
                     >
-                      Show Price By Each
+                      Show each unit price
                     </label>
                   </div>
 
@@ -438,8 +441,8 @@ const EditOffer = () => {
                       htmlFor="showTotalPrice"
                       className="text-sm ms-2 cursor-pointer"
                     >
-                      Show Total Price
-                    </label>{" "}
+                      Show total price
+                    </label>
                   </div>
                   <div className="flex items-center mb-2">
                     <input
@@ -459,7 +462,7 @@ const EditOffer = () => {
                       htmlFor="hideHeaderFooterLines"
                       className="text-sm ms-2 cursor-pointer"
                     >
-                      Hide Header and Footer Lines
+                      Hide header and footer lines
                     </label>
                   </div>
 
@@ -481,8 +484,30 @@ const EditOffer = () => {
                       className="text-sm ms-2 cursor-pointer"
                     >
                       Let customers choose different variants for each item
-                    </label>{" "}
+                    </label>
                   </div>
+
+                  {/* <div className="flex items-center mb-2">
+                    <input
+                      id="skipToCheckout"
+                      className="cursor-pointer"
+                      type="checkbox"
+                      checked={formData.skipToCheckout}
+                      onChange={() => {
+                        setFormData({
+                          ...formData,
+                          skipToCheckout: !formData.skipToCheckout,
+                        });
+                      }}
+                    />
+                    <label
+                      htmlFor="skipToCheckout"
+                      className="text-sm ms-2 cursor-pointer"
+                    >
+                      Skip cart directly to checkout
+                    </label>
+                  </div> */}
+
                   <div className="flex items-center mb-2">
                     <input
                       id="compareToPrice"
@@ -500,8 +525,8 @@ const EditOffer = () => {
                       htmlFor="compareToPrice"
                       className="text-sm ms-2 cursor-pointer"
                     >
-                      Show compare to price{" "}
-                    </label>{" "}
+                      Show compare to price
+                    </label>
                   </div>
                 </div>
               </div>
@@ -1131,7 +1156,7 @@ const EditOffer = () => {
                 </div>
               </div>
             </div>
-            <div className="d-flex flex-col mx-5">
+            <div className="d-flex flex-col mx-5 sticky top-0">
               <h1 className="text-2xl mb-3 text-center">Preview</h1>
               <div className="bg-white  text-black rounded-lg p-5">
                 <Preview

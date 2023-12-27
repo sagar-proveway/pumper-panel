@@ -27,7 +27,7 @@ export const validateUser = async function (req, res) {
 
 export const register = async function (req, res) {
   try {
-    const { name,email,  password } = req.body;
+    const { name, email, password } = req.body;
 
     // check does user exist in User
 
@@ -74,14 +74,18 @@ export const login = async function (req, res) {
   try {
     const { name, password } = req.body;
 
+    console.log(name, password);
+
     // check does user exist in User
 
     const isValidUser = await userModal.findOne({
       name,
     });
 
+    console.log(isValidUser);
+
     if (!isValidUser) {
-      return res.status(400).json({ error: "Invalid password" });
+      return res.status(400).json({ error: "User not found!" });
     }
     const isPasswordCorrect = await bcrypt.compare(
       password,

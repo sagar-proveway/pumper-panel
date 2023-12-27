@@ -56,7 +56,7 @@ const StoreDetail = () => {
   return (
     <div className="p-5 h-screen bg-slate-900">
       <h1 className="text-xl text-white mb-4">
-        Store details for <span className="text-teal-300">{id}</span>
+        Store details for <span className="text-teal-300">({id})</span>
       </h1>
 
       <div className="overflow-auto rounded-lg shadow hidden md:block">

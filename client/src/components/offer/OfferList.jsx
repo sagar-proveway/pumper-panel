@@ -56,7 +56,9 @@ const OfferList = () => {
 
   return (
     <div className="h-screen bg-slate-900 text-white p-5">
-      <h1 className="text-3xl text-white mb-10 tracking-wider">Offer List</h1>
+      <h1 className="text-3xl text-white mb-10 tracking-wider">
+        Offer List <span className="text-teal-300"> ({id})</span>
+      </h1>
 
       <div>
         {loading.loading && (
