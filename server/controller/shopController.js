@@ -1,11 +1,13 @@
 import ShopModal from "../model/shopModal.js";
 import shopify from "../config/shopify.js";
 import Settings from "../model/settingsModal.js";
+import shopRevenueModel from "../model/shopRevenueModel.js";
 
 import { decode } from "html-entities";
+import shopModal from "../model/shopModal.js";
 
 export const getStore = async (req, res, next) => {
-  const { sort, shop } = req.body;
+  const { sort, shop, limit } = req.body;
 
   let sortByDesc;
 
@@ -16,15 +18,52 @@ export const getStore = async (req, res, next) => {
   }
 
   try {
-    let result = await ShopModal.find({
-      shop: { $regex: `${shop}`, $options: "i" },
-    }).sort({ revenue: sortByDesc });
+    let filter = {};
+    let shopLimit = 100;
+    if(limit){
+      shopLimit = limit;
+    }
+    if(shop){
+      filter['shop'] = shop;
+    }
+    // let result = await ShopModal.find(filter).limit(shopLimit + 1);
+    let shopDetails = await ShopModal.find(filter);
+    let result = await shopModal.aggregate([
+      {
+        $match: filter
+      },
+      {
+        $group: {
+          _id: "$shop",
+          totalRevenue: { $sum: "$revenue" },
+        }
+      }
+    ]);
 
-    if (!result || result.length === 0) {
-      throw new Error("Shop not found");
+    for(let i = 0; shopDetails.length > i; i++){
+      let shop = shopDetails[i];
+      let revenue = result.find(item => item._id === shop.shop);
+      if(revenue){
+        shopDetails[i].revenue = revenue.totalRevenue;
+      }else{
+        shopDetails[i].revenue = 0;
+      }
     }
 
-    return res.json({ data: result });
+    // if (!shopDetails || shopDetails.length === 0) {
+    //   throw new Error("Shop not found");
+    // }
+  
+    if(sortByDesc === -1){
+      shopDetails.sort((a, b) => {
+        return b.revenue - a.revenue;
+      });
+    }else{
+      shopDetails.sort((a, b) => {
+        return a.revenue - b.revenue;
+      });
+    }
+    return res.json({ data: shopDetails });
   } catch (error) {
     console.error(error);
     return res.status(404).json({ error: error.message });
