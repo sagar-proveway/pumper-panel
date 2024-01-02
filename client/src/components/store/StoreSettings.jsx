@@ -28,7 +28,7 @@ const StoreSettings = () => {
       const { data } = await axios.post(
         "http://localhost:8081/api/shopDetails/getSettings",
         {
-          shop: id,
+          shopName: id,
         },
         {
           withCredentials: true,
@@ -69,7 +69,7 @@ const StoreSettings = () => {
         "http://localhost:8081/api/shopDetails/setSettings",
 
         {
-          shop: id,
+          shopName: id,
           customCss: formData.customCss,
           customJs: formData.customJs,
           customWidgetSelector: formData.customWidgetSelector,

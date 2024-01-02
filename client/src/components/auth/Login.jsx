@@ -61,7 +61,7 @@ const Login = () => {
           <input
             id="message"
             value={formData.name}
-            className="mt-3 rounded-lg block p-3 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
+            className="mt-3 rounded-lg block p-2 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
             placeholder="Enter Your Name"
             onChange={(e) => {
               setFormData({
@@ -79,7 +79,7 @@ const Login = () => {
             id="message"
             type="password"
             value={formData.password}
-            className="mt-3 rounded-lg block p-3 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
+            className="mt-3 rounded-lg block p-2 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
             placeholder="Enter Your Password"
             onChange={(e) => {
               setFormData({

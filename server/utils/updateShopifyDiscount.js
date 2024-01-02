@@ -85,7 +85,11 @@ export async function updateShopifyDiscount(client, dbData, dId, metaId) {
       variables: {
         id: dId,
         automaticAppDiscount: {
-          combinesWith: combinesWith,
+          combinesWith: {
+            orderDiscounts: dbData.combineOrderDiscounts,
+            productDiscounts: dbData.combineProductDiscounts,
+            shippingDiscounts: dbData.combineShippingDiscounts,
+          },
           title: dbData.offerName,
           functionId: process.env.FUNCTION_ID,
           startsAt: "2022-06-22T00:00:00",
@@ -103,6 +107,7 @@ export async function updateShopifyDiscount(client, dbData, dId, metaId) {
     },
   });
   console.log("logging now");
+  console.log(discountRes.body.data.discountAutomaticAppUpdate);
   return {
     discountTitles: dbData.offerName,
     discountGids:

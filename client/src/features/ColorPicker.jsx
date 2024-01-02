@@ -19,7 +19,7 @@ const ColorPicker = ({ value, setFormData }) => {
           )}
         </div>
         <div
-          className="mt-3 w-full rounded-lg block p-3 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
+          className="mt-1 w-full rounded-lg block p-2 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
           onClick={() => {
             setColorPicker(!colorPicker);
           }}

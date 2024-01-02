@@ -67,7 +67,7 @@ const Store = () => {
         <input
           id="message"
           value={searchQuery}
-          className="w-full mt-3 rounded-lg block p-3 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
+          className="w-full mt-3 rounded-lg block p-2 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
           placeholder="Enter shop name"
           onChange={(e) => {
             setSearchQuery(e.target.value);
@@ -88,15 +88,17 @@ const Store = () => {
               <th className="w-36 p-3 text-sm text-white font-semibold tracking-wide text-left">
                 Status
               </th>
-              <th className="w-36 p-3 text-sm text-white font-semibold tracking-wide text-left flex justify-between items-center">
-                Revenue
-                <div
-                  className="cursor-pointer"
-                  onClick={() => {
-                    setSort(!sort);
-                  }}
-                >
-                  <BiSort />
+              <th className="w-36 p-3 text-sm text-white font-semibold tracking-wide text-left ">
+                <div className="flex items-center gap-2">
+                  <span> Revenue</span>
+                  <span
+                    className="cursor-pointer"
+                    onClick={() => {
+                      setSort(!sort);
+                    }}
+                  >
+                    <BiSort />
+                  </span>
                 </div>
               </th>
               <th className="w-36 p-3 text-sm text-white font-semibold tracking-wide text-left">
@@ -111,7 +113,7 @@ const Store = () => {
               <th className="w-28 p-3 text-sm text-white font-semibold tracking-wide text-left">
                 Settings
               </th>
-              <th className="w-28 p-3 text-sm text-white font-semibold tracking-wide text-left">
+              <th className="w-28 p-3 text-sm text-white font-semibold tracking-wide text-left text-nowrap">
                 Offer Details
               </th>
             </tr>

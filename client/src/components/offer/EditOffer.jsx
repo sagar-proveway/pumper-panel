@@ -1,8 +1,6 @@
 import axios from "axios";
 import { Fragment, useEffect, useState } from "react";
-
 import "./css/bundle.css";
-
 import { useParams, useSearchParams } from "react-router-dom";
 import Preview from "./Preview";
 import useShopifyCurrencyFormat from "@ansugroup/use-shopify-currency-format";
@@ -17,9 +15,15 @@ const EditOffer = () => {
   });
 
   const { id } = useParams();
-
   const [searchParams] = useSearchParams();
   const shopName = searchParams.get("shop");
+  const [productPrice, setProductPrice] = useState(100);
+  const [productOptions, setProductOptions] = useState([]);
+  const [previewCheckBox, setPreviewCheckBox] = useState(1);
+  const [tab, setTab] = useState(1);
+  const [moneyFormat, setMoneyFormat] = useState("");
+  const [hasDefaultVariant, setHasDefaultVariant] = useState(false);
+  const [productComparePrice, setProductComparePrice] = useState(100);
 
   const [formData, setFormData] = useState({
     offerName: "Offer",
@@ -71,6 +75,9 @@ const EditOffer = () => {
     hideHeaderFooterLines: false,
     customCompareAtPrice: "0",
     skipToCheckout: false,
+    combineOrderDiscounts: false,
+    combineProductDiscounts: false,
+    combineShippingDiscounts: false,
   });
 
   const [offerList, setOfferList] = useState([
@@ -85,14 +92,6 @@ const EditOffer = () => {
       labelSelected: false,
     },
   ]);
-
-  const [productPrice, setProductPrice] = useState(100);
-
-  const [previewCheckBox, setPreviewCheckBox] = useState(1);
-
-  const [tab, setTab] = useState(1);
-
-  const [moneyFormat, setMoneyFormat] = useState("");
 
   const getOfferList = async () => {
     setLoading({
@@ -113,9 +112,10 @@ const EditOffer = () => {
 
       setPreviewCheckBox(data.data[0].defaultSelected - 0);
       setProductPrice(data.productData.variants.nodes[0].price);
-
+      setProductOptions(data.productData.options);
+      setHasDefaultVariant(data.productData.hasOnlyDefaultVariant);
+      setProductComparePrice(data.productData.variants.nodes[0].compareAtPrice);
       setFormData(data.data[0]);
-
       unGroupFields(data.data[0]);
 
       setLoading({
@@ -136,11 +136,9 @@ const EditOffer = () => {
 
   const getCurrency = async () => {
     try {
-      console.log(shop);
-
       const { data } = await axios.post(
         "http://localhost:8081/api/shopDetails/getCurrency",
-        { shop },
+        { shopName },
         {
           withCredentials: true,
           "Content-Type": "application/json",
@@ -170,8 +168,6 @@ const EditOffer = () => {
           "Content-Type": "application/json",
         }
       );
-
-      console.log(tempData);
 
       setLoading({
         loading: false,
@@ -308,7 +304,14 @@ const EditOffer = () => {
     // { label: 'Fixed Price (e.g. ' + currencyFormat(29).replace(/(<([^>]+)>)/ig, '') + ')', value: 'fixed' },
   ];
 
-  console.log(formData, "formData");
+  const handleInputChange = (index, field, value) => {
+    setOfferList((prevItems) => {
+      const newItems = [...prevItems];
+      newItems[index] = { ...newItems[index], [field]: value };
+      return newItems;
+    });
+  };
+
   return (
     <div className="h-screen bg-slate-900 text-white p-5 overflow-auto">
       <div className="flex justify-between">
@@ -344,7 +347,7 @@ const EditOffer = () => {
           <div className="grid grid-cols-2">
             <div>
               <div className="bg-slate-800 p-5 me-3 rounded-lg flex flex-col w-full mb-3">
-                <h1 className="text-teal-300 font-semibold text-lg mb-6">
+                <h1 className="text-teal-300 font-semibold text-lg mb-3">
                   Offer name
                 </h1>
 
@@ -352,7 +355,7 @@ const EditOffer = () => {
                   id="message"
                   rows="4"
                   value={formData.offerName}
-                  className="rounded-lg block p-3 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
+                  className="rounded-lg block p-2 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
                   placeholder="Enter Custom Selector to Place Pumper Widget"
                   onChange={(e) => {
                     setFormData({
@@ -362,173 +365,23 @@ const EditOffer = () => {
                   }}
                 />
               </div>
-
               <div className="bg-slate-800 p-5 me-3 rounded-lg flex flex-col w-full mb-3">
-                <h1 className="text-teal-300 font-semibold text-lg mb-6">
-                  Block Setting
+                <h1 className="text-teal-300 font-semibold text-lg mb-3">
+                  Products / Collections
                 </h1>
-
-                <div className="mb-3">
-                  <h1 className="text-teal-300">Block Title</h1>
-
-                  <input
-                    id="message"
-                    rows="4"
-                    value={formData.blockTitle}
-                    className="mt-3 w-full rounded-lg block p-3 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
-                    placeholder="Enter Custom Selector to Place Pumper Widget"
-                    onChange={(e) => {
-                      setFormData({
-                        ...formData,
-                        blockTitle: e.target.value,
-                      });
-                    }}
-                  />
-                </div>
-                <div className="mb-3">
-                  <h1 className="text-teal-300 ">Footer Text</h1>
-
-                  <input
-                    id="message"
-                    rows="4"
-                    value={formData.footerText}
-                    className="mt-3 w-full rounded-lg block p-3 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
-                    placeholder="Enter Custom Selector to Place Pumper Widget"
-                    onChange={(e) => {
-                      setFormData({
-                        ...formData,
-                        footerText: e.target.value,
-                      });
-                    }}
-                  />
-                </div>
-                <div>
-                  <div className="flex items-center mb-2 ">
-                    <input
-                      id="showPriceByEach"
-                      className="cursor-pointer"
-                      type="checkbox"
-                      checked={formData.showPriceByEach}
-                      onChange={() => {
-                        setFormData({
-                          ...formData,
-                          showPriceByEach: !formData.showPriceByEach,
-                        });
-                      }}
-                    />
-                    <label
-                      htmlFor="showPriceByEach"
-                      className="text-sm ms-2 cursor-pointer"
-                    >
-                      Show each unit price
-                    </label>
+                {formData.productArray.length !== 0 && (
+                  <div className="flex gap-2">
+                    <p className="text-teal-300">Products:</p>
+                    <p>{formData.product}</p>
                   </div>
+                )}
 
-                  <div className="flex items-center mb-2">
-                    <input
-                      id="showTotalPrice"
-                      className="cursor-pointer"
-                      type="checkbox"
-                      checked={formData.showTotalPrice}
-                      onChange={() => {
-                        setFormData({
-                          ...formData,
-                          showTotalPrice: !formData.showTotalPrice,
-                        });
-                      }}
-                    />
-                    <label
-                      htmlFor="showTotalPrice"
-                      className="text-sm ms-2 cursor-pointer"
-                    >
-                      Show total price
-                    </label>
+                {formData.productCollectionArray.length !== 0 && (
+                  <div className="flex gap-2">
+                    <p className="text-teal-300">Collections:</p>
+                    <p>{formData.productCollection}</p>
                   </div>
-                  <div className="flex items-center mb-2">
-                    <input
-                      id="hideHeaderFooterLines"
-                      className="cursor-pointer"
-                      type="checkbox"
-                      checked={formData.hideHeaderFooterLines}
-                      onChange={() => {
-                        setFormData({
-                          ...formData,
-                          hideHeaderFooterLines:
-                            !formData.hideHeaderFooterLines,
-                        });
-                      }}
-                    />
-                    <label
-                      htmlFor="hideHeaderFooterLines"
-                      className="text-sm ms-2 cursor-pointer"
-                    >
-                      Hide header and footer lines
-                    </label>
-                  </div>
-
-                  <div className="flex items-center mb-2">
-                    <input
-                      id="includeVarient"
-                      className="cursor-pointer"
-                      type="checkbox"
-                      checked={formData.includeVarient}
-                      onChange={() => {
-                        setFormData({
-                          ...formData,
-                          includeVarient: !formData.includeVarient,
-                        });
-                      }}
-                    />
-                    <label
-                      htmlFor="includeVarient"
-                      className="text-sm ms-2 cursor-pointer"
-                    >
-                      Let customers choose different variants for each item
-                    </label>
-                  </div>
-
-                  {/* <div className="flex items-center mb-2">
-                    <input
-                      id="skipToCheckout"
-                      className="cursor-pointer"
-                      type="checkbox"
-                      checked={formData.skipToCheckout}
-                      onChange={() => {
-                        setFormData({
-                          ...formData,
-                          skipToCheckout: !formData.skipToCheckout,
-                        });
-                      }}
-                    />
-                    <label
-                      htmlFor="skipToCheckout"
-                      className="text-sm ms-2 cursor-pointer"
-                    >
-                      Skip cart directly to checkout
-                    </label>
-                  </div> */}
-
-                  <div className="flex items-center mb-2">
-                    <input
-                      id="compareToPrice"
-                      className="cursor-pointer"
-                      type="checkbox"
-                      checked={formData.compareToPrice}
-                      onChange={() => {
-                        setFormData({
-                          ...formData,
-                          compareToPrice: !formData.compareToPrice,
-                        });
-                      }}
-                    />
-                    <label
-                      htmlFor="compareToPrice"
-                      className="text-sm ms-2 cursor-pointer"
-                    >
-                      Show compare to price
-                    </label>
-                  </div>
-                </div>
+                )}
               </div>
 
               <div className="bg-slate-800 me-3 rounded-lg flex flex-col w-full mb-3">
@@ -537,6 +390,7 @@ const EditOffer = () => {
                     {offerList?.map((item, index) => {
                       return (
                         <div
+                          key={index}
                           className={`${
                             tab === index + 1 && "bg-slate-700"
                           } px-7 py-3 cursor-pointer`}
@@ -550,22 +404,37 @@ const EditOffer = () => {
                     })}
                   </div>
 
-                  <div className="px-4">
+                  <div className="px-4 relative">
                     <h1 className="text-teal-300 font-semibold text-lg mb-6">
                       Edit offer
                     </h1>
                     {offerList?.map((item, index) => {
                       return (
-                        <Fragment>
+                        <Fragment key={index}>
                           {tab === index + 1 && (
                             <Fragment>
+                              <div className="absolute top-1 right-5">
+                                <input
+                                  type="checkbox"
+                                  id={`defaultSelected${index}`}
+                                  name={`defaultSelected${index}`}
+                                  checked={formData.defaultSelected == index}
+                                  onChange={() => {
+                                    setFormData({
+                                      ...formData,
+                                      defaultSelected: index,
+                                    });
+                                  }}
+                                />
+                              </div>
+
                               <div className="mb-3 grid grid-cols-2">
                                 <div className="me-3">
                                   <h1 className="text-teal-300">
                                     Discount Type
                                   </h1>
                                   <select
-                                    className="mt-3 w-full rounded-lg block p-3 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
+                                    className="mt-1 w-full rounded-lg block p-2 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
                                     value={item?.price}
                                     onChange={(e) => {
                                       let newArr = offerList.map(
@@ -602,168 +471,102 @@ const EditOffer = () => {
                                     })}
                                   </select>
                                 </div>
-                                <div>
-                                  <h1 className="opacity-0">Discount Type</h1>
-                                  {item.price !== "default" && (
+                                {item.price !== "default" && (
+                                  <div>
+                                    <h1 className="text-teal-300">Discount</h1>
                                     <input
                                       id="message"
                                       rows="4"
                                       value={item.discount}
-                                      className="mt-3 w-full rounded-lg block p-3 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
+                                      className="mt-1 w-full rounded-lg block p-2 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
                                       placeholder="Enter Custom Selector to Place Pumper Widget"
-                                      onChange={(e) => {
-                                        let newArr = offerList.map(
-                                          (stateItem) => {
-                                            let tempObj = {};
-
-                                            if (
-                                              item.quantity ===
-                                              stateItem?.quantity
-                                            ) {
-                                              tempObj = {
-                                                ...stateItem,
-                                                discount: e.target.value,
-                                              };
-                                              return tempObj;
-                                            }
-
-                                            return stateItem;
-                                          }
-                                        );
-
-                                        setOfferList(newArr);
-                                      }}
+                                      onChange={(e) =>
+                                        handleInputChange(
+                                          index,
+                                          "discount",
+                                          e.target.value
+                                        )
+                                      }
                                     />
-                                  )}
-                                </div>
+                                  </div>
+                                )}
                               </div>
 
                               <div className="mb-3 grid grid-cols-2">
                                 <div className="me-3">
-                                  <h1 className="text-teal-300">QTY</h1>
+                                  <h1 className="text-teal-300">Quantity</h1>
 
                                   <input
-                                    id="message"
+                                    id="quantity"
                                     rows="4"
                                     value={item.quantity}
-                                    className="mt-3 w-full rounded-lg block p-3 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
+                                    className="mt-1 w-full rounded-lg block p-2 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
                                     placeholder="Enter Custom Selector to Place Pumper Widget"
-                                    onChange={(e) => {
-                                      let newArr = offerList.map(
-                                        (stateItem) => {
-                                          let tempObj = {};
-
-                                          if (
-                                            item.quantity ===
-                                            stateItem?.quantity
-                                          ) {
-                                            tempObj = {
-                                              ...stateItem,
-                                              quantity: e.target.value,
-                                            };
-                                            return tempObj;
-                                          }
-
-                                          return stateItem;
-                                        }
-                                      );
-
-                                      setOfferList(newArr);
-                                    }}
+                                    onChange={(e) =>
+                                      handleInputChange(
+                                        index,
+                                        "quantity",
+                                        e.target.value
+                                      )
+                                    }
                                   />
                                 </div>
                                 <div>
                                   <h1 className="text-teal-300">Offer title</h1>
                                   <input
-                                    id="message"
+                                    id="offerTitle"
                                     rows="4"
                                     value={item?.title}
-                                    className="mt-3 w-full rounded-lg block p-3 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
+                                    className="mt-1 w-full rounded-lg block p-2 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
                                     placeholder="Enter Custom Selector to Place Pumper Widget"
-                                    onChange={(e) => {
-                                      let newArr = offerList.map(
-                                        (stateItem) => {
-                                          let tempObj = {};
-
-                                          if (item.title === stateItem?.title) {
-                                            tempObj = {
-                                              ...stateItem,
-                                              title: e.target.value,
-                                            };
-                                            return tempObj;
-                                          }
-
-                                          return stateItem;
-                                        }
-                                      );
-
-                                      setOfferList(newArr);
-                                    }}
+                                    onChange={(e) =>
+                                      handleInputChange(
+                                        index,
+                                        "title",
+                                        e.target.value
+                                      )
+                                    }
                                   />
                                 </div>
                               </div>
 
                               <div className="mb-3 grid grid-cols-2">
                                 <div className="me-3">
-                                  <h1 className="text-teal-300">Label</h1>
-
+                                  <div className="text-teal-300">
+                                    Discount label
+                                  </div>
                                   <input
-                                    id="message"
+                                    id="discountLabel"
                                     rows="4"
-                                    value={item?.label}
-                                    className="mt-3 w-full rounded-lg block p-3 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
+                                    // disabled={item?.subtitleSelected}
+                                    value={item?.subtitle}
+                                    className="mt-1 w-full rounded-lg block p-2 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 disabled:opacity-50 "
                                     placeholder="Enter Custom Selector to Place Pumper Widget"
-                                    onChange={(e) => {
-                                      let newArr = offerList.map(
-                                        (stateItem) => {
-                                          let tempObj = {};
-
-                                          if (item.title === stateItem?.title) {
-                                            tempObj = {
-                                              ...stateItem,
-                                              label: e.target.value,
-                                            };
-                                            return tempObj;
-                                          }
-
-                                          return stateItem;
-                                        }
-                                      );
-
-                                      setOfferList(newArr);
-                                    }}
+                                    onChange={(e) =>
+                                      handleInputChange(
+                                        index,
+                                        "subtitle",
+                                        e.target.value
+                                      )
+                                    }
                                   />
                                 </div>
                                 <div>
-                                  <div className="text-teal-300 opacity-0">
-                                    df{" "}
-                                  </div>
-
+                                  <h1 className="text-teal-300">Tag</h1>
                                   <input
-                                    id="message"
+                                    id="tag"
                                     rows="4"
-                                    value={item?.subtitle}
-                                    className="mt-3 w-full rounded-lg block p-3 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
+                                    // disabled={item?.labelSelected}
+                                    value={item?.label}
+                                    className="mt-1 w-full rounded-lg block p-2 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 disabled:opacity-50 "
                                     placeholder="Enter Custom Selector to Place Pumper Widget"
-                                    onChange={(e) => {
-                                      let newArr = offerList.map(
-                                        (stateItem) => {
-                                          let tempObj = {};
-
-                                          if (item.title === stateItem?.title) {
-                                            tempObj = {
-                                              ...stateItem,
-                                              label: e.target.value,
-                                            };
-                                            return tempObj;
-                                          }
-
-                                          return stateItem;
-                                        }
-                                      );
-
-                                      setOfferList(newArr);
-                                    }}
+                                    onChange={(e) =>
+                                      handleInputChange(
+                                        index,
+                                        "label",
+                                        e.target.value
+                                      )
+                                    }
                                   />
                                 </div>
                               </div>
@@ -775,6 +578,285 @@ const EditOffer = () => {
                   </div>
                 </div>
               </div>
+              <div className="bg-slate-800 p-5 me-3 rounded-lg flex flex-col w-full mb-3">
+                <div className="mb-3">
+                  <h1 className="text-teal-300">Block Title</h1>
+
+                  <input
+                    id="blockTitle"
+                    rows="4"
+                    value={formData.blockTitle}
+                    className="mt-1 w-full rounded-lg block p-2 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
+                    placeholder="Enter Custom Selector to Place Pumper Widget"
+                    onChange={(e) => {
+                      setFormData({
+                        ...formData,
+                        blockTitle: e.target.value,
+                      });
+                    }}
+                  />
+                </div>
+                <div className="mb-3">
+                  <h1 className="text-teal-300 ">Footer Text</h1>
+
+                  <input
+                    id="footerText"
+                    rows="4"
+                    value={formData.footerText}
+                    className="mt-1 w-full rounded-lg block p-2 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
+                    placeholder="Enter Custom Selector to Place Pumper Widget"
+                    onChange={(e) => {
+                      setFormData({
+                        ...formData,
+                        footerText: e.target.value,
+                      });
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="bg-slate-800 p-5 me-3 rounded-lg flex flex-col w-full mb-3">
+                <h1 className="text-teal-300 font-semibold text-lg mb-3">
+                  Settings
+                </h1>
+                <div>
+                  <div className="mb-3">
+                    <p className="text-teal-300 mb-1 ">Appearance and looks</p>
+                    <div className="flex items-center mb-2 ">
+                      <input
+                        id="showPriceByEach"
+                        className="cursor-pointer"
+                        type="checkbox"
+                        checked={formData.showPriceByEach}
+                        onChange={() => {
+                          setFormData({
+                            ...formData,
+                            showPriceByEach: !formData.showPriceByEach,
+                          });
+                        }}
+                      />
+                      <label
+                        htmlFor="showPriceByEach"
+                        className="text-sm ms-2 cursor-pointer"
+                      >
+                        Show each unit price
+                      </label>
+                    </div>
+
+                    <div className="flex items-center mb-2">
+                      <input
+                        id="showTotalPrice"
+                        className="cursor-pointer"
+                        type="checkbox"
+                        checked={formData.showTotalPrice}
+                        onChange={() => {
+                          setFormData({
+                            ...formData,
+                            showTotalPrice: !formData.showTotalPrice,
+                          });
+                        }}
+                      />
+                      <label
+                        htmlFor="showTotalPrice"
+                        className="text-sm ms-2 cursor-pointer"
+                      >
+                        Show total price
+                      </label>
+                    </div>
+                    <div className="flex items-center mb-2">
+                      <input
+                        id="hideHeaderFooterLines"
+                        className="cursor-pointer"
+                        type="checkbox"
+                        checked={formData.hideHeaderFooterLines}
+                        onChange={() => {
+                          setFormData({
+                            ...formData,
+                            hideHeaderFooterLines:
+                              !formData.hideHeaderFooterLines,
+                          });
+                        }}
+                      />
+                      <label
+                        htmlFor="hideHeaderFooterLines"
+                        className="text-sm ms-2 cursor-pointer"
+                      >
+                        Hide header and footer lines
+                      </label>
+                    </div>
+                  </div>
+
+                  <hr />
+                  <div className="mt-3 mb-3">
+                    <p className="text-teal-300 mb-1 ">Functionality</p>
+                    <div className="flex items-center mb-2">
+                      <input
+                        id="includeVarient"
+                        className="cursor-pointer"
+                        type="checkbox"
+                        checked={formData.includeVarient}
+                        onChange={() => {
+                          setFormData({
+                            ...formData,
+                            includeVarient: !formData.includeVarient,
+                          });
+                        }}
+                      />
+                      <label
+                        htmlFor="includeVarient"
+                        className="text-sm ms-2 cursor-pointer"
+                      >
+                        Let customers choose different variants for each item
+                      </label>
+                    </div>
+                    <div className="flex items-center mb-2">
+                      <input
+                        id="skipToCheckout"
+                        className="cursor-pointer"
+                        type="checkbox"
+                        checked={formData.skipToCheckout}
+                        onChange={() => {
+                          setFormData({
+                            ...formData,
+                            skipToCheckout: !formData.skipToCheckout,
+                          });
+                        }}
+                      />
+                      <label
+                        htmlFor="skipToCheckout"
+                        className="text-sm ms-2 cursor-pointer"
+                      >
+                        Skip cart directly to checkout
+                      </label>
+                    </div>
+                    <div className="flex items-center mb-2">
+                      <input
+                        id="compareToPrice"
+                        className="cursor-pointer"
+                        type="checkbox"
+                        checked={formData.compareToPrice}
+                        onChange={() => {
+                          setFormData({
+                            ...formData,
+                            compareToPrice: !formData.compareToPrice,
+                          });
+                        }}
+                      />
+                      <label
+                        htmlFor="compareToPrice"
+                        className="text-sm ms-2 cursor-pointer"
+                      >
+                        Show compare to price
+                      </label>
+                    </div>
+                    {formData.compareToPrice && (
+                      <div className="flex gap-2">
+                        <div className="flex-1">
+                          <label className="text-teal-300 text-sm">
+                            Set custom compare price
+                          </label>
+
+                          <input
+                            id="customComparePrice"
+                            rows="4"
+                            value={formData.customCompareAtPrice}
+                            className="mt-1 w-full rounded-lg block p-2 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
+                            onChange={(e) => {
+                              setFormData({
+                                ...formData,
+                                customCompareAtPrice: e.target.value,
+                              });
+                            }}
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <label className="text-teal-300 text-sm">
+                            Shopify product compare price
+                          </label>
+                          <input
+                            id="productComparePrice"
+                            rows="4"
+                            disabled
+                            value={productComparePrice}
+                            className="mt-1 w-full rounded-lg block p-2 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 disabled:opacity-50  "
+                            onChange={(e) => {}}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <hr />
+
+                  <div className="mt-3">
+                    <p className="text-teal-300 mb-1 ">
+                      Enable Discount Combination
+                    </p>
+                    <div className="flex items-center mb-2">
+                      <input
+                        id="combineProductDiscounts"
+                        className="cursor-pointer"
+                        type="checkbox"
+                        checked={formData.combineProductDiscounts}
+                        onChange={() => {
+                          setFormData({
+                            ...formData,
+                            combineProductDiscounts:
+                              !formData.combineProductDiscounts,
+                          });
+                        }}
+                      />
+                      <label
+                        htmlFor="combineProductDiscounts"
+                        className="text-sm ms-2 cursor-pointer"
+                      >
+                        Product Discounts
+                      </label>
+                    </div>
+                    <div className="flex items-center mb-2">
+                      <input
+                        id="combineOrderDiscounts"
+                        className="cursor-pointer"
+                        type="checkbox"
+                        checked={formData.combineOrderDiscounts}
+                        onChange={() => {
+                          setFormData({
+                            ...formData,
+                            combineOrderDiscounts:
+                              !formData.combineOrderDiscounts,
+                          });
+                        }}
+                      />
+                      <label
+                        htmlFor="combineOrderDiscounts"
+                        className="text-sm ms-2 cursor-pointer"
+                      >
+                        Order Discounts
+                      </label>
+                    </div>
+                    <div className="flex items-center mb-2">
+                      <input
+                        id="combineShippingDiscounts"
+                        className="cursor-pointer"
+                        type="checkbox"
+                        checked={formData.combineShippingDiscounts}
+                        onChange={() => {
+                          setFormData({
+                            ...formData,
+                            combineShippingDiscounts:
+                              !formData.combineShippingDiscounts,
+                          });
+                        }}
+                      />
+                      <label
+                        htmlFor="combineShippingDiscounts"
+                        className="text-sm ms-2 cursor-pointer"
+                      >
+                        Shipping Discounts
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
               <div className="bg-slate-800 p-5 me-3 rounded-lg flex flex-col w-full mb-3">
                 <h1 className="text-teal-300 font-semibold text-lg mb-6">
@@ -782,7 +864,7 @@ const EditOffer = () => {
                 </h1>
                 <div className="flex flex-col ">
                   <div>
-                    <h1 className="text-teal-300">1. Block Title</h1>
+                    <h1 className="text-teal-300">Block Title</h1>
                   </div>
 
                   <div className="mb-3 grid grid-cols-3 gap-x-3">
@@ -790,7 +872,7 @@ const EditOffer = () => {
                       id="message"
                       rows="4"
                       value={formData?.blockTitleSizeTypo}
-                      className="mt-3 w-full rounded-lg block p-3 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
+                      className="mt-1 w-full rounded-lg block p-2 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
                       placeholder="Enter Custom Selector to Place Pumper Widget"
                       onChange={(e) => {
                         setFormData({
@@ -801,7 +883,7 @@ const EditOffer = () => {
                     />
 
                     <select
-                      className="mt-3 w-full rounded-lg block p-3 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
+                      className="mt-1 w-full rounded-lg block p-2 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
                       value={formData?.blockTitleStyleTypo}
                       onChange={(e) => {
                         setFormData({
@@ -833,7 +915,7 @@ const EditOffer = () => {
 
                 <div className="flex flex-col ">
                   <div>
-                    <h1 className="text-teal-300">2. Title </h1>
+                    <h1 className="text-teal-300">Title </h1>
                   </div>
 
                   <div className="mb-3 grid grid-cols-3 gap-x-3">
@@ -841,7 +923,7 @@ const EditOffer = () => {
                       id="message"
                       rows="4"
                       value={formData?.titleSizeTypo}
-                      className="mt-3 w-full rounded-lg block p-3 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
+                      className="mt-1 w-full rounded-lg block p-2 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
                       placeholder="Enter Custom Selector to Place Pumper Widget"
                       onChange={(e) => {
                         setFormData({
@@ -852,7 +934,7 @@ const EditOffer = () => {
                     />
 
                     <select
-                      className="mt-3 w-full rounded-lg block p-3 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
+                      className="mt-1 w-full rounded-lg block p-2 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
                       value={formData?.titleStyleTypo}
                       onChange={(e) => {
                         setFormData({
@@ -884,7 +966,7 @@ const EditOffer = () => {
 
                 <div className="flex flex-col ">
                   <div>
-                    <h1 className="text-teal-300"> 3. Subtitle</h1>
+                    <h1 className="text-teal-300">Subtitle</h1>
                   </div>
 
                   <div className="mb-3 grid grid-cols-3 gap-x-3">
@@ -892,7 +974,7 @@ const EditOffer = () => {
                       id="message"
                       rows="4"
                       value={formData?.discountSizeTypo}
-                      className="mt-3 w-full rounded-lg block p-3 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
+                      className="mt-1 w-full rounded-lg block p-2 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
                       placeholder="Enter Custom Selector to Place Pumper Widget"
                       onChange={(e) => {
                         setFormData({
@@ -903,7 +985,7 @@ const EditOffer = () => {
                     />
 
                     <select
-                      className="mt-3 w-full rounded-lg block p-3 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
+                      className="mt-1 w-full rounded-lg block p-2 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
                       value={formData?.discountStyleTypo}
                       onChange={(e) => {
                         setFormData({
@@ -935,7 +1017,7 @@ const EditOffer = () => {
 
                 <div className="flex flex-col ">
                   <div>
-                    <h1 className="text-teal-300"> 4. Price</h1>
+                    <h1 className="text-teal-300">Price</h1>
                   </div>
 
                   <div className="mb-3 grid grid-cols-3 gap-x-3">
@@ -943,7 +1025,7 @@ const EditOffer = () => {
                       id="message"
                       rows="4"
                       value={formData?.textSizeTypo}
-                      className="mt-3 w-full rounded-lg block p-3 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
+                      className="mt-1 w-full rounded-lg block p-2 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
                       placeholder="Enter Custom Selector to Place Pumper Widget"
                       onChange={(e) => {
                         setFormData({
@@ -954,7 +1036,7 @@ const EditOffer = () => {
                     />
 
                     <select
-                      className="mt-3 w-full rounded-lg block p-3 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
+                      className="mt-1 w-full rounded-lg block p-2 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
                       value={formData?.textStyleTypo}
                       onChange={(e) => {
                         setFormData({
@@ -986,7 +1068,7 @@ const EditOffer = () => {
 
                 <div className="flex flex-col ">
                   <div>
-                    <h1 className="text-teal-300"> 5. Label</h1>
+                    <h1 className="text-teal-300">Label</h1>
                   </div>
 
                   <div className="mb-3 grid grid-cols-3 gap-x-3">
@@ -994,7 +1076,7 @@ const EditOffer = () => {
                       id="message"
                       rows="4"
                       value={formData?.labelSizeTypo}
-                      className="mt-3 w-full rounded-lg block p-3 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
+                      className="mt-1 w-full rounded-lg block p-2 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
                       placeholder="Enter Custom Selector to Place Pumper Widget"
                       onChange={(e) => {
                         setFormData({
@@ -1005,7 +1087,7 @@ const EditOffer = () => {
                     />
 
                     <select
-                      className="mt-3 w-full rounded-lg block p-3 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
+                      className="mt-1 w-full rounded-lg block p-2 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
                       value={formData?.labelStyleTypo}
                       onChange={(e) => {
                         setFormData({
@@ -1037,7 +1119,7 @@ const EditOffer = () => {
 
                 <div className="flex flex-col ">
                   <div>
-                    <h1 className="text-teal-300">6. Footer</h1>
+                    <h1 className="text-teal-300">Footer</h1>
                   </div>
 
                   <div className="mb-3 grid grid-cols-3 gap-x-3">
@@ -1045,7 +1127,7 @@ const EditOffer = () => {
                       id="message"
                       rows="4"
                       value={formData?.footerSizeTypo}
-                      className="mt-3 w-full rounded-lg block p-3 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
+                      className="mt-1 w-full rounded-lg block p-2 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
                       placeholder="Enter Custom Selector to Place Pumper Widget"
                       onChange={(e) => {
                         setFormData({
@@ -1056,7 +1138,7 @@ const EditOffer = () => {
                     />
 
                     <select
-                      className="mt-3 w-full rounded-lg block p-3 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
+                      className="mt-1 w-full rounded-lg block p-2 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
                       value={formData?.footerStyleTypo}
                       onChange={(e) => {
                         setFormData({
@@ -1085,11 +1167,11 @@ const EditOffer = () => {
                     />
                   </div>
                 </div>
-
+                {/* <hr /> */}
                 <div className="flex flex-col ">
-                  <div>
-                    <h1 className="text-teal-300">7. Color</h1>
-                  </div>
+                  {/* <div>
+                    <h1 className="text-teal-300">Color</h1>
+                  </div> */}
 
                   <div className="mb-3 grid grid-cols-2 gap-x-3">
                     <div className="flex flex-col mt-5">
@@ -1125,7 +1207,7 @@ const EditOffer = () => {
                         id="message"
                         rows="4"
                         value={formData?.borderWidth}
-                        className="mt-3 w-full rounded-lg block p-3 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
+                        className="mt-1 w-full rounded-lg block p-2 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
                         placeholder="Enter Custom Selector to Place Pumper Widget"
                         onChange={(e) => {
                           setFormData({
@@ -1142,7 +1224,7 @@ const EditOffer = () => {
                         id="message"
                         rows="4"
                         value={formData?.borderRadius}
-                        className="mt-3 w-full rounded-lg block p-3 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
+                        className="mt-1 w-full rounded-lg block p-2 text-sm bg-gray-700 placeholder-gray-400 text-white  focus:outline-none focus:ring-0  border-2 focus:border-gray-500 border-gray-600 "
                         placeholder="Enter Custom Selector to Place Pumper Widget"
                         onChange={(e) => {
                           setFormData({
@@ -1156,14 +1238,14 @@ const EditOffer = () => {
                 </div>
               </div>
             </div>
-            <div className="d-flex flex-col mx-5 sticky top-0">
+            <div className="d-flex flex-col mx-5 ">
               <h1 className="text-2xl mb-3 text-center">Preview</h1>
-              <div className="bg-white  text-black rounded-lg p-5">
+              <div className="bg-white  text-black rounded-lg p-5 sticky top-0">
                 <Preview
-                  fields={offerList}
-                  blockTitle={formData.blockTitle}
                   previewCheckBox={previewCheckBox}
                   setPreviewCheckBox={setPreviewCheckBox}
+                  fields={offerList}
+                  blockTitle={formData.blockTitle}
                   titleColor={formData.titleColor}
                   discountColor={formData.discountColor}
                   textColor={formData.textColor}
@@ -1191,12 +1273,12 @@ const EditOffer = () => {
                   footerStyleTypo={formData.footerStyleTypo}
                   borderWidth={formData.borderWidth}
                   borderRadius={formData.borderRadius}
-                  productOptions={formData.productOptions}
+                  productOptions={productOptions}
                   includeVarient={formData.includeVarient}
                   compareToPrice={formData.compareToPrice}
                   showTotalPrice={formData.showTotalPrice}
                   showPriceByEach={formData.showPriceByEach}
-                  hasDefaultVariant={formData.hasDefaultVariant}
+                  hasDefaultVariant={hasDefaultVariant}
                   noBranding={formData.noBranding}
                   hideHeaderFooterLines={formData.hideHeaderFooterLines}
                   customCompareAtPrice={formData.customCompareAtPrice}

@@ -100,7 +100,7 @@ export default function Preview(props) {
                         <h5 style={titleStyle}>
                           {item?.title ? item?.title : index + 1 + " Pair"}
                         </h5>
-                        <h4 style={titleStyle}>
+                        <h4 style={textStyle}>
                           {props.showPriceByEach
                             ? item?.price != "each"
                               ? item?.price == "percentage"
@@ -184,6 +184,43 @@ export default function Preview(props) {
                       </div>
                     </div>
                   </div>
+                  {!props.hasDefaultVariant ? (
+                    props.includeVarient ? (
+                      props.previewCheckBox == index.toString() ? (
+                        <div className="block__cbinfo">
+                          {Array.from(
+                            { length: item?.quantity },
+                            (_, i) => i
+                          ).map((it, idx) => (
+                            <div key={idx} className="block__cbinfo--item">
+                              <span>#{it + 1}</span>
+                              {props.productOptions.map((option, index) => (
+                                <div
+                                  key={index}
+                                  className="block__cbinfo--dropdown"
+                                >
+                                  {it == 0 && <h6>{option.name}</h6>}
+                                  <select name="" id="">
+                                    {option.values.map((val, index) => (
+                                      <option key={index} value="">
+                                        {val}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+                              ))}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        ""
+                      )
+                    ) : (
+                      ""
+                    )
+                  ) : (
+                    ""
+                  )}
                 </label>
               </div>
             );

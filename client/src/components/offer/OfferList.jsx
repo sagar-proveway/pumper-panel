@@ -76,9 +76,12 @@ const OfferList = () => {
 
         {!loading.loading &&
           loading.success !== "" &&
-          offerList?.map((item) => {
+          offerList?.map((item, index) => {
             return (
-              <div className="bg-slate-800 p-5 me-3 rounded-lg mb-3 flex justify-between items-center">
+              <div
+                key={index}
+                className="bg-slate-800 p-5 me-3 rounded-lg mb-3 flex justify-between items-center"
+              >
                 <h1>{item.offerName}</h1>
                 <Link
                   to={`/offer/list/edit/${item?._id}?shop=${id}`}

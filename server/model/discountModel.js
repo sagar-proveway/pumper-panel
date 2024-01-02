@@ -58,6 +58,10 @@ const DiscountSchema = new Schema({
   discountTitles: String,
   productUrl: String,
   status: String,
+  skipToCheckout: Boolean,
+  combineProductDiscounts: { type: Boolean, default: false },
+  combineOrderDiscounts: { type: Boolean, default: false },
+  combineShippingDiscounts: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

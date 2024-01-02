@@ -32,7 +32,7 @@ export default function Sidebar() {
     <div className="bg-slate-800 w-60 flex flex-col">
       <div className="flex items-center gap-2 px-6 py-6">
         <span className="text-teal-300 text-xl font-extrabold">
-          Proveway-admin
+          Pumper Dev Panel
         </span>
       </div>
       <div className="py-8 px-3 flex flex-1 flex-col gap-0.5">
