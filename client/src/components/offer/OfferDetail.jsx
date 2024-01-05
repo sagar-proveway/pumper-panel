@@ -21,7 +21,7 @@ const OfferDetails = () => {
         error: "",
       });
       const { data } = await axios.post(
-        "http://localhost:8081/api/discountDetails/getDiscountByIdToCompare",
+        "/api/discountDetails/getDiscountByIdToCompare",
         {
           shop: id,
         },

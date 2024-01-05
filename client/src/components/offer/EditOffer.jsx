@@ -102,7 +102,7 @@ const EditOffer = () => {
 
     try {
       const { data } = await axios.post(
-        "http://localhost:8081/api/discountDetails/getDiscountById",
+        "/api/discountDetails/getDiscountById",
         { id },
         {
           withCredentials: true,
@@ -137,7 +137,7 @@ const EditOffer = () => {
   const getCurrency = async () => {
     try {
       const { data } = await axios.post(
-        "http://localhost:8081/api/shopDetails/getCurrency",
+        "/api/shopDetails/getCurrency",
         { shopName },
         {
           withCredentials: true,
@@ -161,7 +161,7 @@ const EditOffer = () => {
       let tempData = groupFields(formData, offerList);
 
       const { data } = await axios.post(
-        "http://localhost:8081/api/discountDetails/editDiscount",
+        "/api/discountDetails/editDiscount",
         { id, data: tempData },
         {
           withCredentials: true,

@@ -28,7 +28,7 @@ const Store = () => {
       });
 
       const { data } = await axios.post(
-        "http://localhost:8081/api/shopDetails/getStore",
+        "/api/shopDetails/getStore",
         {
           sort,
           shop: searchQuery,
