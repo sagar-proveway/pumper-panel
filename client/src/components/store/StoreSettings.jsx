@@ -81,9 +81,9 @@ const StoreSettings = () => {
       );
 
       setFormData({
-        customCss: data.data[0]?.customCss,
-        customJs: data.data[0]?.customJs,
-        customWidgetSelector: data.data[0]?.customWidgetSelector,
+        customCss: formData.customCss,
+        customJs: formData.customJs,
+        customWidgetSelector: formData.customWidgetSelector,
       });
 
       setLoading({
