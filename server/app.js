@@ -18,7 +18,10 @@ app.use(bodyParser.json());
 app.use(
   cors({
     credentials: true,
-    origin: ["http://localhost:3000"],
+    origin: [
+      "http://localhost:3000",
+      "https://pumper-panel-dc68ec84419a.herokuapp.com",
+    ],
   })
 );
 app.use(serveStatic(STATIC_PATH, { index: false }));

@@ -1,5 +1,5 @@
-export DATABASE=mongodb+srv://uptrack:0cYRiDiSgJ3lcTBX@cluster0.khkew.mongodb.net/discount_staging
-# export DATABASE=mongodb+srv://uptrack:0cYRiDiSgJ3lcTBX@cluster0.khkew.mongodb.net/profit_pumper
+# export DATABASE='mongodb+srv://uptrack:FvcxlVYLf9uHDbzg@cluster0.khkew.mongodb.net/profit_pumper?retryWrites=true&w=majority'
+export DATABASE=mongodb+srv://ProvewayStage:7Uzd4FwuGTOHVAhy@freecluster.enfqqhh.mongodb.net/profit_pumper
 
 export SHOPIFY_API_KEY=5ca9905387125f11917e49b31a2649bb
 export SHOPIFY_API_SECRET=b07dd883aab707649a63cd294d480228
