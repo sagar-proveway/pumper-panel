@@ -22,6 +22,12 @@ export const DASHBOARD_SIDEBAR_LINKS = [
     path: "/store",
     icon: <HiOutlineCube />,
   },
+  {
+    key: "Settings",
+    label: "Settings",
+    path: "/store/settings",
+    icon: <HiOutlineCube />,
+  },
 ];
 
 export const DASHBOARD_SIDEBAR_BOTTOM_LINKS = [

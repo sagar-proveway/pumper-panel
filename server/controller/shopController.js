@@ -111,6 +111,9 @@ export const setSettings = async (req, res, next) => {
     customCss,
     customJs,
     customWidgetSelector,
+    customBundleJs,
+    customBundleCss,
+    customBundleSelector,
   } = req.body;
 
   try {
@@ -148,6 +151,9 @@ export const setSettings = async (req, res, next) => {
       customCss,
       customJs,
       customWidgetSelector,
+      customBundleJs,
+      customBundleCss,
+      customBundleSelector,
     };
     const variable = {
       metafieldsSetInput: [
@@ -186,9 +192,14 @@ export const setSettings = async (req, res, next) => {
         customCss,
         customJs,
         customWidgetSelector,
+        customBundleJs,
+        customBundleCss,
+        customBundleSelector,
         createAt: new Date(),
       },
     };
+
+    console.log(insertData);
 
     await Settings.updateOne({ shop }, insertData, {
       upsert: true,

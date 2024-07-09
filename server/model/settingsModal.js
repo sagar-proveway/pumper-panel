@@ -6,6 +6,9 @@ const Setting = new Schema({
   customCss: { type: String, default: "" },
   customJs: { type: String, default: "" },
   customWidgetSelector: { type: String, default: "" },
+  customBundleSelector: { type: String, default: "" },
+  customBundleCss: { type: String, default: "" },
+  customBundleJs: { type: String, default: "" },
   createAt: Date,
 });
 
