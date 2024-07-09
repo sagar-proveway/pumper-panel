@@ -28,7 +28,7 @@ const Store = () => {
       });
 
       const { data } = await axios.post(
-        "http://localhost:8081/api/shopDetails/getStore",
+        "/api/shopDetails/getStore",
         {
           sort,
           shop: searchQuery,
@@ -159,7 +159,7 @@ const Store = () => {
                         </div>
 
                         <Link
-                          to={`/offer/${item?.storeDomain}`}
+                          to={`/offer/${item?.shop}`}
                           className="font-bold ms-2 hover:underline"
                         >
                           <HiExternalLink size={20} />
@@ -168,7 +168,7 @@ const Store = () => {
 
                       <td className="p-3 text-sm text-white whitespace-nowrap">
                         <Link
-                          to={`/store/${item?.storeDomain}`}
+                          to={`/store/${item?.shop}`}
                           className="font-bold hover:underline"
                         >
                           <HiExternalLink size={20} />
@@ -176,7 +176,7 @@ const Store = () => {
                       </td>
                       <td className="p-3 text-sm text-white whitespace-nowrap">
                         <Link
-                          to={`/store/settings/${item?.storeDomain}`}
+                          to={`/store/settings/${item?.shop}`}
                           className="font-bold hover:underline"
                         >
                           <HiOutlineCog size={20} />
@@ -185,7 +185,7 @@ const Store = () => {
 
                       <td className="p-3 text-sm text-white whitespace-nowrap">
                         <Link
-                          to={`/offer/list/${item?.storeDomain}`}
+                          to={`/offer/list/${item?.shop}`}
                           className="font-bold hover:underline"
                         >
                           <HiExternalLink size={20} />

@@ -23,7 +23,7 @@ const StoreDetail = () => {
 
     try {
       const { data } = await axios.post(
-        "http://localhost:8081/api/shopDetails/getShopById",
+        "/api/shopDetails/getShopById",
         { shop: id },
         {
           withCredentials: true,

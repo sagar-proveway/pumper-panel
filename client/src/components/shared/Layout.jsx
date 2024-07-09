@@ -10,7 +10,7 @@ export default function Layout() {
   const validateUser = async () => {
     try {
       await axios.post(
-        "http://localhost:8081/api/user/validateUser",
+        "/api/user/validateUser",
         {},
         {
           withCredentials: true,

@@ -9,6 +9,7 @@ import OfferDetails from "./components/offer/OfferDetail";
 import OfferList from "./components/offer/OfferList";
 import EditOffer from "./components/offer/EditOffer";
 import Login from "./components/auth/Login";
+import Feedback from "./components/Canny";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         </Route>
         <Route path="/login" element={<Login />} />
         {/* <Route path="/register" element={<Register />} /> */}
+        <Route path="/canny" element={<Feedback />} />
       </Routes>
     </Router>
   );

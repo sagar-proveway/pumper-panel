@@ -24,7 +24,7 @@ const OfferList = () => {
 
     try {
       const { data } = await axios.post(
-        "http://localhost:8081/api/discountDetails/getAllDiscountById",
+        "/api/discountDetails/getAllDiscountById",
         { shop: id },
         {
           withCredentials: true,

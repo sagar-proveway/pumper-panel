@@ -18,7 +18,10 @@ app.use(bodyParser.json());
 app.use(
   cors({
     credentials: true,
-    origin: ["http://localhost:3000"],
+    origin: [
+      "http://localhost:3000",
+      "https://pumper-panel-dc68ec84419a.herokuapp.com",
+    ],
   })
 );
 app.use(serveStatic(STATIC_PATH, { index: false }));
@@ -28,10 +31,12 @@ app.use(cookieParser());
 import getDiscount from "./routes/discountRoute.js";
 import shopRoutes from "./routes/shopRoute.js";
 import user from "./routes/userRoute.js";
+import canny from "./routes/CannyRoute.js";
 
 app.use("/api/discountDetails/", getDiscount);
 app.use("/api/shopDetails/", shopRoutes);
 app.use("/api/user/", user);
+app.use("/api/canny", canny);
 
 app.use("/*", async (_req, res, _next) => {
   return res

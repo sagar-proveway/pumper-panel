@@ -31,7 +31,7 @@ const StoreSettings = () => {
         error: "",
       });
       const { data } = await axios.post(
-        "http://localhost:8081/api/shopDetails/getSettings",
+        "/api/shopDetails/getSettings",
         {
           shopName: shopId,
         },
@@ -77,7 +77,7 @@ const StoreSettings = () => {
     try {
       console.log(formData);
       const { data } = await axios.post(
-        "http://localhost:8081/api/shopDetails/setSettings",
+        "/api/shopDetails/setSettings",
 
         {
           shopName: shopId,
