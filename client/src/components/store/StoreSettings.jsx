@@ -181,7 +181,7 @@ const StoreSettings = () => {
                   getSettings(searchQuery);
                 }}
               >
-                Save
+                Search
               </button>
             </div>
           </div>
